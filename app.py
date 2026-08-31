@@ -13,7 +13,7 @@ st.set_page_config(
     layout="wide"
 )
 
-DATA_DIR = Path("data/processed")
+DATA_DIR = Path("data/consum")
 
 # --------------------------------------------------
 # LOAD DATA
@@ -22,16 +22,12 @@ DATA_DIR = Path("data/processed")
 @st.cache_data
 def load_data():
 
-    customers = pd.read_parquet(
-        DATA_DIR / "customers.parquet"
-    )
-
     articles = pd.read_parquet(
         DATA_DIR / "articles.parquet"
     )
 
-    transactions = pd.read_parquet(
-        DATA_DIR / "transactions.parquet"
+    user_profiles = pd.read_parquet(
+        DATA_DIR / "user_profiles.parquet"
     )
 
     recommendations = pd.read_parquet(
@@ -47,9 +43,8 @@ def load_data():
     )
 
     return (
-        customers,
         articles,
-        transactions,
+        user_profiles,
         recommendations,
         demo_users,
         bought_together,
@@ -57,9 +52,8 @@ def load_data():
 
 
 (
-    customers,
     articles,
-    transactions,
+    user_profiles,
     recommendations,
     demo_users,
     bought_together,
@@ -114,63 +108,21 @@ if st.session_state.customer_id is None:
     # PREVIEW CUSTOMER PROFILE
     # ----------------------------------------
 
-    customer_info = customers[
-        customers["customer_id"] == selected_user
-    ]
+    profile = user_profiles[
+        user_profiles["customer_id"] == selected_user
+    ].iloc[0]
 
-    age = None
+    age = profile["age"]
 
-    if not customer_info.empty:
-        age = customer_info.iloc[0]["age"]
+    total_purchases = profile["total_purchases"]
 
-    user_tx = transactions[
-        transactions["customer_id"] == selected_user
-    ]
+    favorite_category = profile["favorite_category"]
 
-    user_history = user_tx.merge(
-        articles[
-            [
-                "article_id",
-                "product_group_name",
-                "colour_group_name",
-                "product_type_name",
-            ]
-        ],
-        on="article_id",
-        how="left"
-    )
+    favorite_color = profile["favorite_color"]
 
-    total_purchases = len(user_history)
+    favorite_product_type = profile["favorite_product_type"]
 
-    favorite_category = (
-        user_history["product_group_name"]
-        .mode()
-        .iloc[0]
-        if not user_history.empty
-        else "-"
-    )
-
-    favorite_color = (
-        user_history["colour_group_name"]
-        .mode()
-        .iloc[0]
-        if not user_history.empty
-        else "-"
-    )
-
-    favorite_product_type = (
-        user_history["product_type_name"]
-        .mode()
-        .iloc[0]
-        if not user_history.empty
-        else "-"
-    )
-
-    avg_spend = (
-        user_tx["price"].mean()
-        if not user_tx.empty
-        else 0
-    )
+    avg_spend = profile["avg_spend"]
 
     st.divider()
 
@@ -244,61 +196,25 @@ else:
     # CUSTOMER PROFILE
     # --------------------------------------------------
 
-    customer_info = customers[
-        customers["customer_id"] == customer_id
-    ]
+    profile = user_profiles[
+        user_profiles["customer_id"] == customer_id
+    ].iloc[0]
 
-    age = None
+    age = profile["age"]
 
-    if not customer_info.empty:
-        age = customer_info.iloc[0]["age"]
+    total_purchases = profile["total_purchases"]
 
-    user_tx = transactions[
-        transactions["customer_id"] == customer_id
-    ]
+    favorite_category = profile["favorite_category"]
 
-    user_history = user_tx.merge(
-        articles[
-            [
-                "article_id",
-                "product_group_name",
-                "colour_group_name",
-                "product_type_name",
-            ]
-        ],
-        on="article_id",
-        how="left"
-    )
+    favorite_color = profile["favorite_color"]
 
-    total_purchases = len(user_history)
+    favorite_product_type = profile["favorite_product_type"]
 
-    favorite_category = (
-        user_history["product_group_name"]
-        .mode()
-        .iloc[0]
-        if not user_history.empty
-        else "-"
-    )
-
-    favorite_color = (
-        user_history["colour_group_name"]
-        .mode()
-        .iloc[0]
-        if not user_history.empty
-        else "-"
-    )
-
-    favorite_product_type = (
-        user_history["product_type_name"]
-        .mode()
-        .iloc[0]
-        if not user_history.empty
-        else "-"
-    )
+    avg_spend = profile["avg_spend"]
 
     st.subheader("Customer Profile")
 
-    k1, k2, k3, k4 = st.columns(4)
+    k1, k2, k3, k4, k5 = st.columns(5)
 
     k1.metric("Age", age)
 
@@ -315,6 +231,11 @@ else:
     k4.metric(
         "Favourite Color",
         favorite_color
+    )
+
+    k5.metric(
+        "Avg Purchase Price",
+        f"{avg_spend:.2f} €"
     )
 
     st.caption(
