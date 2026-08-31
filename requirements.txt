@@ -1,4 +1,7 @@
 implicit == 0.7.3
+mlxtend == 0.25.0
+ortools == 9.15.6755
 pandas == 3.0.5
 pyarrow == 24.0.0
 scipy == 1.18.1
+streamlit == 1.62.0
