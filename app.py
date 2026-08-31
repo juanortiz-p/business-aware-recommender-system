@@ -92,6 +92,16 @@ if st.session_state.customer_id is None:
         "Business-Aware Fashion Store"
     )
 
+    st.info(
+        """
+        This demo showcases three recommendation techniques:
+
+        • ALS Collaborative Filtering \n
+        • Business-Aware Optimization (OR-Tools) \n
+        • Frequently Bought Together (Association Rules)
+        """
+    )
+
     st.markdown(
         """
         Select a customer to simulate
