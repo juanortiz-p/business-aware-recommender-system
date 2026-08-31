@@ -1,5 +1,7 @@
 # Business-Aware Recommender System
 
+https://business-aware-recommender-system-juanortiz-p.streamlit.app/
+
 An end-to-end e-commerce recommendation platform that combines **Collaborative Filtering**, **Association Rule Mining**, and **Mathematical Optimization** to generate personalized product recommendations that balance customer relevance with business objectives.
 
 ## 🚀 Why This Project?
